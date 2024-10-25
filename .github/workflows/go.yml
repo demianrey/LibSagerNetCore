@@ -28,3 +28,9 @@ jobs:
         run: |
           gomobile bind -v -androidapi 21 -trimpath -tags='disable_debug' -ldflags='-s -w -buildid=' .
           rm -r libcore-sources.jar
+
+      - name: Upload libcore.aar as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: libcore
+          path: libcore.aar
