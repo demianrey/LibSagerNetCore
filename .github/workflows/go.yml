@@ -29,10 +29,5 @@ jobs:
           gomobile bind -v -androidapi 21 -trimpath -tags='disable_debug' -ldflags='-s -w -buildid=' .
           rm -r libcore-sources.jar
 
-      - name: Copy .aar to app/libs
-        run: |
-          proj=../../app/libs
-          if [ -d "$proj" ]; then
-            cp -f libcore.aar "$proj"
-            echo ">> install $(realpath $proj)/libcore.aar"
-          fi
+      - name: Move .aar to project root
+        run: mv libcore.aar $GITHUB_WORKSPACE/libcore.aar
