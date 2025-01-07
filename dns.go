@@ -10,6 +10,8 @@ import (
 
 type LocalResolver interface {
 	LookupIP(network string, domain string) (string, error)
+	Exchange(b []byte) ([]byte, error)
+	SupportExchange() bool
 }
 
 func EncodeDomainNameSystemQuery(id int32, domain string, ipv6Mode int32) ([]byte, error) {

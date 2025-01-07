@@ -1,15 +1,17 @@
 package libcore
 
 import (
-	ss_common "github.com/v2fly/v2ray-core/v5/proxy/shadowsocks/common"
+	"github.com/v2fly/v2ray-core/v5/common/net"
 	"github.com/v2fly/v2ray-core/v5/proxy/sip003"
 	"github.com/v2fly/v2ray-core/v5/proxy/sip003/self"
-	"github.com/v2fly/v2ray-core/v5/transport/internet"
 
 	"libcore/clash/transport/simple-obfs"
 )
 
-var _ sip003.StreamPlugin = (*obfsLocalPlugin)(nil)
+var (
+	_ sip003.Plugin       = (*obfsLocalPlugin)(nil)
+	_ sip003.StreamPlugin = (*obfsLocalPlugin)(nil)
+)
 
 func init() {
 	sip003.RegisterPlugin("obfs-local", func() sip003.Plugin {
@@ -23,7 +25,11 @@ type obfsLocalPlugin struct {
 	port string
 }
 
-func (p *obfsLocalPlugin) Init(_ string, _ string, _ string, remotePort string, pluginOpts string, _ []string, _ *ss_common.MemoryAccount) error {
+func (p *obfsLocalPlugin) Init(_, _, _, _, _ string, _ []string) error {
+	panic("Please call InitStreamPlugin.")
+}
+
+func (p *obfsLocalPlugin) InitStreamPlugin(remotePort string, pluginOpts string) error {
 	options, err := self.ParsePluginOptions(pluginOpts)
 	if err != nil {
 		return newError("obfs-local: failed to parse plugin options").Base(err)
@@ -52,11 +58,11 @@ func (p *obfsLocalPlugin) Init(_ string, _ string, _ string, remotePort string, 
 	return nil
 }
 
-func (p *obfsLocalPlugin) StreamConn(connection internet.Connection) internet.Connection {
+func (p *obfsLocalPlugin) StreamConn(conn net.Conn) net.Conn {
 	if !p.tls {
-		return obfs.NewHTTPObfs(connection, p.host, p.port)
+		return obfs.NewHTTPObfs(conn, p.host, p.port)
 	} else {
-		return obfs.NewTLSObfs(connection, p.host)
+		return obfs.NewTLSObfs(conn, p.host)
 	}
 }
 
